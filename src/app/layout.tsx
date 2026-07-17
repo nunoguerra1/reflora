@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Geist, JetBrains_Mono } from "next/font/google";
 import { SmoothScrollProvider } from "@/components/motion/smooth-scroll-provider";
 import "./globals.css";
+import { Header } from "@/components/layout/header";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -31,7 +32,10 @@ export default function RootLayout({
       <body
         className={`${bricolage.variable} ${geist.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
-        <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <SmoothScrollProvider>
+          <Header />
+          {children}
+        </SmoothScrollProvider>
       </body>
     </html>
   );

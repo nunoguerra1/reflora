@@ -9,8 +9,8 @@ import { MagneticButton } from "@/components/motion/magnetic-button";
 
 gsap.registerPlugin(SplitText);
 
-const SeedlingScene = dynamic(
-    () => import("@/components/three/seedling-scene").then((m) => m.SeedlingScene),
+const BonsaiScene = dynamic(
+    () => import("@/components/three/real-bonsai-scene").then((m) => m.RealBonsaiScene),
     { ssr: false }
 );
 
@@ -53,7 +53,7 @@ export function Hero() {
             className="relative flex min-h-screen items-center overflow-hidden bg-background"
         >
             <div className="absolute inset-0">
-                <SeedlingScene />
+                <BonsaiScene />
             </div>
 
             <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">

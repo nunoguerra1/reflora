@@ -26,6 +26,7 @@ const BonsaiScene = dynamic(
 
 export function Hero() {
     const containerRef = useRef<HTMLDivElement>(null);
+    const scrollProgressRef = useRef(0);
 
     useGSAP(
         () => {
@@ -85,6 +86,9 @@ export function Hero() {
                     start: "top top",
                     end: "bottom top",
                     scrub: 1,
+                    onUpdate: (self) => {
+                        scrollProgressRef.current = self.progress;
+                    },
                 },
             });
 
@@ -139,11 +143,8 @@ export function Hero() {
                 </div>
 
                 <div className="hero-visual-frame relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] border border-border md:aspect-auto md:h-[32rem]">
-                    <div className="absolute inset-0 h-full w-full">
-                        <BonsaiScene />
-                    </div>
-
-                    <span className="pointer-events-none absolute bottom-5 right-6 z-20 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    <BonsaiScene scrollProgressRef={scrollProgressRef} />
+                    <span className="pointer-events-none absolute bottom-5 right-6 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
                         bonsai · reflora
                     </span>
                 </div>

@@ -1,16 +1,10 @@
 "use client";
 
-import { Suspense, useMemo, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Sphere, Cylinder, Environment, ContactShadows, Points, PointMaterial } from "@react-three/drei";
+import { Suspense, useRef, type MutableRefObject } from "react";
+import { Canvas } from "@react-three/fiber";
+import { Sphere, Cylinder, Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
-
-function usePrefersReducedMotion() {
-    return useMemo(() => {
-        if (typeof window === "undefined") return false;
-        return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    }, []);
-}
+import { AmbientDust, useLivelyMotion } from "./scene-helpers";
 
 function Pot() {
     return (
@@ -62,18 +56,9 @@ function FoliagePad({
     );
 }
 
-function Bonsai() {
+function Bonsai({ scrollProgressRef }: { scrollProgressRef?: MutableRefObject<number> }) {
     const groupRef = useRef<THREE.Group>(null);
-    const reducedMotion = usePrefersReducedMotion();
-
-    useFrame((state, delta) => {
-        if (reducedMotion || !groupRef.current) return;
-        groupRef.current.rotation.y += delta * 0.08;
-        const targetX = state.pointer.y * 0.12;
-        const targetZ = -state.pointer.x * 0.08;
-        groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetX, 0.04);
-        groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetZ, 0.04);
-    });
+    useLivelyMotion(groupRef, scrollProgressRef);
 
     return (
         <group ref={groupRef} position={[0, 0.3, 0]}>
@@ -86,56 +71,13 @@ function Bonsai() {
     );
 }
 
-function pseudoRandom(seed: number) {
-    const x = Math.sin(seed * 12.9898) * 43758.5453;
-    return x - Math.floor(x);
-}
-
-function AmbientDust({ count = 180 }: { count?: number }) {
-    const pointsRef = useRef<THREE.Points>(null);
-    const reducedMotion = usePrefersReducedMotion();
-
-    const positions = useMemo(() => {
-        const arr = new Float32Array(count * 3);
-        for (let i = 0; i < count; i++) {
-            arr[i * 3] = (pseudoRandom(i * 1.7) - 0.5) * 7;
-            arr[i * 3 + 1] = (pseudoRandom(i * 3.1 + 10) - 0.5) * 6;
-            arr[i * 3 + 2] = (pseudoRandom(i * 5.3 + 20) - 0.5) * 5;
-        }
-        return arr;
-    }, [count]);
-
-    useFrame((_, delta) => {
-        if (reducedMotion || !pointsRef.current) return;
-        const posAttr = pointsRef.current.geometry.attributes.position as THREE.BufferAttribute;
-        for (let i = 0; i < count; i++) {
-            const y = posAttr.getY(i) + delta * 0.035;
-            posAttr.setY(i, y > 3 ? -3 : y);
-        }
-        posAttr.needsUpdate = true;
-    });
-
-    return (
-        <Points ref={pointsRef} positions={positions} stride={3}>
-            <PointMaterial
-                transparent
-                color="#C7D3BE"
-                size={0.018}
-                sizeAttenuation
-                depthWrite={false}
-                opacity={0.5}
-            />
-        </Points>
-    );
-}
-
-export function BonsaiScene() {
+export function BonsaiScene({ scrollProgressRef }: { scrollProgressRef?: MutableRefObject<number> }) {
     return (
         <Canvas camera={{ position: [2.4, 0.8, 3.6], fov: 40 }} dpr={[1, 2]}>
             <ambientLight intensity={0.5} />
             <directionalLight position={[3, 5, 2]} intensity={1.4} color="#F1F3ED" />
             <pointLight position={[-3, 0, -2]} intensity={0.4} color="#8BAF52" />
-            <Bonsai />
+            <Bonsai scrollProgressRef={scrollProgressRef} />
             <AmbientDust />
             <ContactShadows position={[0, -1.3, 0]} opacity={0.5} scale={6} blur={2.5} far={2} />
             <Suspense fallback={null}>

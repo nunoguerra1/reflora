@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { Suspense, useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Sphere, Cylinder, Environment, ContactShadows, Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
@@ -10,11 +10,6 @@ function usePrefersReducedMotion() {
         if (typeof window === "undefined") return false;
         return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     }, []);
-}
-
-function pseudoRandom(seed: number) {
-    const x = Math.sin(seed * 12.9898) * 43758.5453;
-    return x - Math.floor(x);
 }
 
 function Pot() {
@@ -67,44 +62,6 @@ function FoliagePad({
     );
 }
 
-function AmbientDust({ count = 170 }: { count?: number }) {
-    const pointsRef = useRef<THREE.Points>(null);
-    const reducedMotion = usePrefersReducedMotion();
-
-    const positions = useMemo(() => {
-        const arr = new Float32Array(count * 3);
-        for (let i = 0; i < count; i++) {
-            arr[i * 3] = (pseudoRandom(i * 1.7) - 0.5) * 8;
-            arr[i * 3 + 1] = (pseudoRandom(i * 3.1 + 10) - 0.5) * 8;
-            arr[i * 3 + 2] = (pseudoRandom(i * 5.3 + 20) - 0.5) * 8;
-        }
-        return arr;
-    }, [count]);
-
-    useFrame((_, delta) => {
-        if (reducedMotion || !pointsRef.current) return;
-        const posAttr = pointsRef.current.geometry.attributes.position as THREE.BufferAttribute;
-        for (let i = 0; i < count; i++) {
-            const y = posAttr.getY(i) + delta * 0.05;
-            posAttr.setY(i, y > 4 ? -4 : y);
-        }
-        posAttr.needsUpdate = true;
-    });
-
-    return (
-        <Points ref={pointsRef} positions={positions} stride={3}>
-            <PointMaterial
-                transparent
-                color="#C7D3BE"
-                size={0.02}
-                sizeAttenuation
-                depthWrite={false}
-                opacity={0.6}
-            />
-        </Points>
-    );
-}
-
 function Bonsai() {
     const groupRef = useRef<THREE.Group>(null);
     const reducedMotion = usePrefersReducedMotion();
@@ -129,6 +86,49 @@ function Bonsai() {
     );
 }
 
+function pseudoRandom(seed: number) {
+    const x = Math.sin(seed * 12.9898) * 43758.5453;
+    return x - Math.floor(x);
+}
+
+function AmbientDust({ count = 180 }: { count?: number }) {
+    const pointsRef = useRef<THREE.Points>(null);
+    const reducedMotion = usePrefersReducedMotion();
+
+    const positions = useMemo(() => {
+        const arr = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            arr[i * 3] = (pseudoRandom(i * 1.7) - 0.5) * 7;
+            arr[i * 3 + 1] = (pseudoRandom(i * 3.1 + 10) - 0.5) * 6;
+            arr[i * 3 + 2] = (pseudoRandom(i * 5.3 + 20) - 0.5) * 5;
+        }
+        return arr;
+    }, [count]);
+
+    useFrame((_, delta) => {
+        if (reducedMotion || !pointsRef.current) return;
+        const posAttr = pointsRef.current.geometry.attributes.position as THREE.BufferAttribute;
+        for (let i = 0; i < count; i++) {
+            const y = posAttr.getY(i) + delta * 0.035;
+            posAttr.setY(i, y > 3 ? -3 : y);
+        }
+        posAttr.needsUpdate = true;
+    });
+
+    return (
+        <Points ref={pointsRef} positions={positions} stride={3}>
+            <PointMaterial
+                transparent
+                color="#C7D3BE"
+                size={0.018}
+                sizeAttenuation
+                depthWrite={false}
+                opacity={0.5}
+            />
+        </Points>
+    );
+}
+
 export function BonsaiScene() {
     return (
         <Canvas camera={{ position: [2.4, 0.8, 3.6], fov: 40 }} dpr={[1, 2]}>
@@ -138,7 +138,9 @@ export function BonsaiScene() {
             <Bonsai />
             <AmbientDust />
             <ContactShadows position={[0, -1.3, 0]} opacity={0.5} scale={6} blur={2.5} far={2} />
-            <Environment preset="forest" />
+            <Suspense fallback={null}>
+                <Environment preset="forest" />
+            </Suspense>
         </Canvas>
     );
 }

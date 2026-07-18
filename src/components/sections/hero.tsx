@@ -13,8 +13,15 @@ import { LeafMark } from "@/components/motion/leaf-mark";
 gsap.registerPlugin(SplitText, ScrollTrigger);
 
 const BonsaiScene = dynamic(
-    () => import("@/components/three/bonsai-scene").then((m) => m.BonsaiScene),
-    { ssr: false }
+    () => import("@/components/three/real-bonsai-scene").then((m) => m.RealBonsaiScene),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="flex h-full w-full items-center justify-center">
+                <div className="h-8 w-8 animate-pulse rounded-full bg-primary/30" />
+            </div>
+        ),
+    }
 );
 
 export function Hero() {

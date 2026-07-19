@@ -41,7 +41,7 @@ export function Hero() {
                         duration: 0.9,
                         stagger: 0.06,
                         ease: "power3.out",
-                        delay: 0.5,
+                        delay: 2.7,
                     });
                 },
             });
@@ -51,7 +51,7 @@ export function Hero() {
                 y: -10,
                 duration: 0.7,
                 ease: "power2.out",
-                delay: 0.2,
+                delay: 2.4,
             });
 
             gsap.from(".hero-sub, .hero-cta", {
@@ -60,7 +60,7 @@ export function Hero() {
                 duration: 0.8,
                 stagger: 0.15,
                 ease: "power3.out",
-                delay: 1.1,
+                delay: 3.3,
             });
 
             gsap.from(".hero-visual-frame", {
@@ -68,14 +68,14 @@ export function Hero() {
                 scale: 0.94,
                 duration: 1.1,
                 ease: "power3.out",
-                delay: 0.3,
+                delay: 2.5,
             });
 
             gsap.from(".hero-numeral", {
                 opacity: 0,
                 duration: 1.4,
                 ease: "power1.out",
-                delay: 0.4,
+                delay: 2.6,
             });
 
             gsap.to(".hero-visual-frame", {

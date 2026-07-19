@@ -76,6 +76,44 @@
   --border: #2A2E24;
 }
 
+.reflora-marker-dot {
+  position: relative;
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--background) 60%, transparent);
+}
+
+.reflora-marker-dot::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 9999px;
+  background: var(--primary);
+  opacity: 0.35;
+  animation: reflora-marker-pulse 2.2s ease-out infinite;
+}
+
+@keyframes reflora-marker-pulse {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

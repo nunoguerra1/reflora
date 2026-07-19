@@ -119,9 +119,12 @@ export function Features() {
     useGSAP(
         () => {
             const track = trackRef.current;
-            if (!track) return;
+            const lastCardEl = cardRefs.current[cardRefs.current.length - 1]?.root;
+            if (!track || !lastCardEl) return;
 
-            const distance = track.scrollWidth - window.innerWidth + 160;
+            const lastCardRect = lastCardEl.getBoundingClientRect();
+            const lastCardCenter = lastCardRect.left + lastCardRect.width / 2;
+            const distance = lastCardCenter - window.innerWidth / 2;
 
             gsap.to(track, {
                 x: -distance,

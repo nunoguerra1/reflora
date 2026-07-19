@@ -7,7 +7,7 @@ import * as THREE from "three";
 import { AmbientDust, useLivelyMotion } from "./scene-helpers";
 
 function RealPlantModel({ scrollProgressRef }: { scrollProgressRef?: MutableRefObject<number> }) {
-    const { scene } = useGLTF("/models/bonsai.glb");
+    const { scene } = useGLTF("/models/plant.glb");
     const groupRef = useRef<THREE.Group>(null);
     useLivelyMotion(groupRef, scrollProgressRef);
 
@@ -20,7 +20,7 @@ function RealPlantModel({ scrollProgressRef }: { scrollProgressRef?: MutableRefO
     );
 }
 
-useGLTF.preload("/models/bonsai.glb");
+useGLTF.preload("/models/plant.glb");
 
 export function RealBonsaiScene({ scrollProgressRef }: { scrollProgressRef?: MutableRefObject<number> }) {
     return (

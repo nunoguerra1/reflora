@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { Garden } from "./entities/garden.entity";
+import { User, Garden, Plant, CareLog } from "./entities";
 
 const globalForDataSource = globalThis as unknown as {
     dataSource?: DataSource;
@@ -16,9 +16,16 @@ export const dataSource =
         password: process.env.DB_PASSWORD ?? "reflora",
         database: process.env.DB_NAME ?? "reflora",
         synchronize: process.env.NODE_ENV !== "production",
-        entities: [Garden],
+        entities: [User, Garden, Plant, CareLog],
     });
 
 if (process.env.NODE_ENV !== "production") {
     globalForDataSource.dataSource = dataSource;
+}
+
+export async function ensureInitialized() {
+    if (!dataSource.isInitialized) {
+        await dataSource.initialize();
+    }
+    return dataSource;
 }

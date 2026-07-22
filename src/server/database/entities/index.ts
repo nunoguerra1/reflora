@@ -21,6 +21,9 @@ export class User {
     @Column({ type: "varchar", nullable: true })
     avatarUrl!: string | null;
 
+    @Column({ type: "varchar", nullable: true, select: false })
+    passwordHash!: string | null;
+
     @OneToMany(() => Garden, (garden) => garden.owner)
     gardens!: Garden[];
 

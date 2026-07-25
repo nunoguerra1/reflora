@@ -1,17 +1,29 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { LeafMark } from "./leaf-mark";
 
 const SESSION_KEY = "reflora-preloader-shown";
 
+function subscribe() {
+    return () => { };
+}
+function getSnapshot() {
+    return sessionStorage.getItem(SESSION_KEY) !== null;
+}
+function getServerSnapshot() {
+    return false;
+}
+
 export function Preloader() {
-    const [visible, setVisible] = useState(() => {
-        if (typeof window === "undefined") return true;
-        return !sessionStorage.getItem(SESSION_KEY);
-    });
+    const alreadyShown = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+    const [done, setDone] = useState(false);
+    const hasRunRef = useRef(false);
+
+    const visible = !alreadyShown && !done;
+
     const containerRef = useRef<HTMLDivElement>(null);
     const counterRef = useRef<HTMLSpanElement>(null);
     const barRef = useRef<HTMLDivElement>(null);
@@ -20,7 +32,8 @@ export function Preloader() {
 
     useGSAP(
         () => {
-            if (!visible) return;
+            if (!visible || hasRunRef.current) return;
+            hasRunRef.current = true;
 
             const prefersReducedMotion = window.matchMedia(
                 "(prefers-reduced-motion: reduce)"
@@ -30,8 +43,8 @@ export function Preloader() {
             sessionStorage.setItem(SESSION_KEY, "1");
 
             const finish = () => {
-                document.body.style.overflow = "hidden";
-                setVisible(false);
+                document.body.style.overflow = "";
+                setDone(true);
             };
 
             if (prefersReducedMotion) {
@@ -57,6 +70,11 @@ export function Preloader() {
             })
                 .to(topPanelRef.current, { yPercent: -100, duration: 0.7, ease: "power4.inOut" }, "+=0.15")
                 .to(bottomPanelRef.current, { yPercent: 100, duration: 0.7, ease: "power4.inOut" }, "<");
+
+            return () => {
+                tl.kill();
+                document.body.style.overflow = "";
+            };
         },
         { scope: containerRef, dependencies: [visible] }
     );
@@ -67,7 +85,6 @@ export function Preloader() {
         <div ref={containerRef} className="fixed inset-0 z-[100]">
             <div ref={topPanelRef} className="absolute inset-x-0 top-0 h-1/2 bg-background" />
             <div ref={bottomPanelRef} className="absolute inset-x-0 bottom-0 h-1/2 bg-background" />
-
             <div className="relative flex h-full flex-col items-center justify-center gap-6">
                 <LeafMark className="h-8 w-8 text-accent" />
                 <span

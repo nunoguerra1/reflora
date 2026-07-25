@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import { SmoothScrollProvider } from "@/components/motion/smooth-scroll-provider";
-import { Header } from "@/components/layout/header";
 import { Preloader } from "@/components/motion/preloader";
 import "./globals.css";
 
@@ -20,10 +19,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <SessionProvider>
           <Preloader />
-          <SmoothScrollProvider>
-            <Header />
-            {children}
-          </SmoothScrollProvider>
+          <SmoothScrollProvider>{children}</SmoothScrollProvider>
         </SessionProvider>
       </body>
     </html>

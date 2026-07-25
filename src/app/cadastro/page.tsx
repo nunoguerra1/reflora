@@ -4,7 +4,8 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { AuthLayout } from "@/components/auth/auth-layout";
+import { motion, AnimatePresence } from "motion/react";
+import { AuthLayout, fieldVariants } from "@/components/auth/auth-layout";
 
 export default function CadastroPage() {
     const router = useRouter();
@@ -46,13 +47,23 @@ export default function CadastroPage() {
 
     return (
         <AuthLayout>
-            <h1 className="font-display text-3xl font-bold text-foreground">Criar conta</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <motion.h1
+                variants={fieldVariants}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="font-display text-3xl font-bold text-foreground"
+            >
+                Criar conta
+            </motion.h1>
+            <motion.p
+                variants={fieldVariants}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-2 text-sm text-muted-foreground"
+            >
                 Comece a registrar suas plantas hoje.
-            </p>
+            </motion.p>
 
             <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
-                <div>
+                <motion.div variants={fieldVariants} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
                     <label
                         htmlFor="name"
                         className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground"
@@ -65,11 +76,11 @@ export default function CadastroPage() {
                         required
                         value={name}
                         onChange={(event) => setName(event.target.value)}
-                        className="mt-2 w-full rounded-lg border border-border bg-secondary/30 px-4 py-3 text-foreground outline-none focus:border-primary"
+                        className="mt-2 w-full rounded-lg border border-border bg-secondary/30 px-4 py-3 text-foreground outline-none transition-colors focus:border-primary"
                     />
-                </div>
+                </motion.div>
 
-                <div>
+                <motion.div variants={fieldVariants} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
                     <label
                         htmlFor="email"
                         className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground"
@@ -82,11 +93,11 @@ export default function CadastroPage() {
                         required
                         value={email}
                         onChange={(event) => setEmail(event.target.value)}
-                        className="mt-2 w-full rounded-lg border border-border bg-secondary/30 px-4 py-3 text-foreground outline-none focus:border-primary"
+                        className="mt-2 w-full rounded-lg border border-border bg-secondary/30 px-4 py-3 text-foreground outline-none transition-colors focus:border-primary"
                     />
-                </div>
+                </motion.div>
 
-                <div>
+                <motion.div variants={fieldVariants} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
                     <label
                         htmlFor="password"
                         className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground"
@@ -100,27 +111,47 @@ export default function CadastroPage() {
                         minLength={8}
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
-                        className="mt-2 w-full rounded-lg border border-border bg-secondary/30 px-4 py-3 text-foreground outline-none focus:border-primary"
+                        className="mt-2 w-full rounded-lg border border-border bg-secondary/30 px-4 py-3 text-foreground outline-none transition-colors focus:border-primary"
                     />
-                </div>
+                </motion.div>
 
-                {error && <p className="text-sm text-red-400">{error}</p>}
+                <AnimatePresence>
+                    {error && (
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1, x: [0, -8, 8, -6, 6, 0] }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.4 }}
+                            className="text-sm text-red-400"
+                        >
+                            {error}
+                        </motion.p>
+                    )}
+                </AnimatePresence>
 
-                <button
+                <motion.button
+                    variants={fieldVariants}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    whileHover={{ scale: loading ? 1 : 1.02 }}
+                    whileTap={{ scale: loading ? 1 : 0.98 }}
                     type="submit"
                     disabled={loading}
                     className="mt-2 rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground transition-opacity disabled:opacity-60"
                 >
                     {loading ? "Criando conta..." : "Criar conta"}
-                </button>
+                </motion.button>
             </form>
 
-            <p className="mt-6 text-sm text-muted-foreground">
+            <motion.p
+                variants={fieldVariants}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-6 text-sm text-muted-foreground"
+            >
                 Já tem conta?{" "}
                 <Link href="/entrar" className="text-accent underline-offset-4 hover:underline">
                     Entrar
                 </Link>
-            </p>
+            </motion.p>
         </AuthLayout>
     );
 }

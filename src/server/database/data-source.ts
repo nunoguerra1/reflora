@@ -4,6 +4,7 @@ import { User, Garden, Plant, CareLog } from "./entities";
 
 const globalForDataSource = globalThis as unknown as {
     dataSource?: DataSource;
+    dataSourceInitPromise?: Promise<DataSource>;
 };
 
 export const dataSource =
@@ -24,8 +25,12 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export async function ensureInitialized() {
-    if (!dataSource.isInitialized) {
-        await dataSource.initialize();
+    if (dataSource.isInitialized) return dataSource;
+
+    if (!globalForDataSource.dataSourceInitPromise) {
+        globalForDataSource.dataSourceInitPromise = dataSource.initialize();
     }
+
+    await globalForDataSource.dataSourceInitPromise;
     return dataSource;
 }

@@ -4,10 +4,10 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 
-export function CreateGardenForm() {
+export function CreatePlantForm({ gardenId }: { gardenId: string }) {
     const router = useRouter();
     const [open, setOpen] = useState(false);
-    const [name, setName] = useState("");
+    const [species, setSpecies] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -16,20 +16,20 @@ export function CreateGardenForm() {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("/api/gardens", {
+        const response = await fetch("/api/plants", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name }),
+            body: JSON.stringify({ species, gardenId }),
         });
 
         setLoading(false);
 
         if (!response.ok) {
-            setError("Não foi possível criar o jardim.");
+            setError("Não foi possível adicionar a planta.");
             return;
         }
 
-        setName("");
+        setSpecies("");
         setOpen(false);
         router.refresh();
     }
@@ -40,10 +40,10 @@ export function CreateGardenForm() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setOpen(true)}
-                className="flex h-full min-h-[140px] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+                className="flex h-full min-h-[120px] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
             >
                 <span className="text-2xl">+</span>
-                <span className="text-sm">Novo jardim</span>
+                <span className="text-sm">Nova planta</span>
             </motion.button>
         );
     }
@@ -56,9 +56,9 @@ export function CreateGardenForm() {
             <input
                 autoFocus
                 required
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="Nome do jardim"
+                value={species}
+                onChange={(event) => setSpecies(event.target.value)}
+                placeholder="Espécie (ex: Samambaia)"
                 className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
             />
             {error && <p className="text-xs text-red-400">{error}</p>}
@@ -68,7 +68,7 @@ export function CreateGardenForm() {
                     disabled={loading}
                     className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
                 >
-                    {loading ? "Criando..." : "Criar"}
+                    {loading ? "Adicionando..." : "Adicionar"}
                 </button>
                 <button
                     type="button"

@@ -20,3 +20,11 @@ export async function createGarden(ownerId: string, input: CreateGardenInput) {
     });
     return repo.save(garden);
 }
+
+export async function getGardenById(id: string, ownerId: string) {
+    const repo = await getGardensRepository();
+    return repo.findOne({
+        where: { id, owner: { id: ownerId } },
+        relations: { plants: true },
+    });
+}

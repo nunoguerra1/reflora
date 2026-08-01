@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { cookies, headers } from "next/headers";
-import { CreateGardenForm } from "@/components/dashboard/create-garden-form";
+import { CreateGardenForm } from "../../components/dashboard/create-garden-form";
 
 type GardenSummary = {
     id: string;
@@ -38,15 +39,16 @@ export default async function DashboardPage() {
 
             <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {gardens.map((garden) => (
-                    <div
+                    <Link
                         key={garden.id}
+                        href={`/dashboard/gardens/${garden.id}`}
                         className="rounded-2xl border border-border bg-secondary/20 p-6 transition-colors hover:border-primary/50"
                     >
                         <h3 className="font-display text-lg font-bold text-foreground">{garden.name}</h3>
                         <p className="mt-1 text-sm text-muted-foreground">
                             {garden.plants?.length ?? 0} planta{garden.plants?.length === 1 ? "" : "s"}
                         </p>
-                    </div>
+                    </Link>
                 ))}
                 <CreateGardenForm />
             </div>
